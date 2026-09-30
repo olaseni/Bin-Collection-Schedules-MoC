@@ -7,7 +7,7 @@ timestamps, so re-running never duplicates or churns the file.
 """
 import re
 import sys
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import requests
@@ -67,7 +67,18 @@ def render(items):
     return "\r\n".join(lines) + "\r\n"
 
 
+def show():
+    for name, d in sorted(load_existing(), key=lambda x: (x[1], x[0])):
+        days = (d - date.today()).days
+        when = "today" if days == 0 else "tomorrow" if days == 1 else (
+            f"in {days} days" if days > 1 else f"{-days} day(s) ago")
+        print(f"{d:%a %d %b %Y}  {when:<12} {name}")
+
+
 if __name__ == "__main__":
+    if "--show" in sys.argv:
+        show()
+        sys.exit()
     merged = load_existing() | scrape()
     new = render(merged)
     if not OUT.exists() or OUT.read_bytes().decode() != new:

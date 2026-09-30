@@ -12,9 +12,13 @@ setup:
 run: setup
     {{venv}}/bin/python bins.py
 
+# Run locally: update bins.ics and print its path and events
+generate: run show
+    @echo "Wrote $(realpath bins.ics)"
+
 # Show the events currently in bins.ics
 show:
-    @grep -E '^(DTSTART|SUMMARY)' bins.ics | paste - - | sed 's/DTSTART;VALUE=DATE://; s/SUMMARY://'
+    @{{venv}}/bin/python bins.py --show
 
 # Remove the virtualenv and caches
 clean:

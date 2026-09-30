@@ -21,7 +21,8 @@ and maintains a subscribable calendar feed, `bins.ics`.
 Requires Python 3 and [just](https://github.com/casey/just).
 
 ```sh
-just run    # set up the venv and update bins.ics
+just generate  # update bins.ics locally and show its events
+just run       # same, without the event listing
 just show   # list events in bins.ics
 just clean  # remove the venv
 ```
