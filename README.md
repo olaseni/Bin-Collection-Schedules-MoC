@@ -50,8 +50,17 @@ file. This is achieved by:
 - The file is only rewritten when the content differs, so the workflow only
   commits on genuinely new dates.
 
-Events are all-day (`DTSTART;VALUE=DATE`) and marked `TRANSP:TRANSPARENT`
-(show as free, not busy).
+Events are timed: 07:00-07:15 `Europe/London` (set by `PICKUP_TIME` in
+`bins.py`; the file includes a `VTIMEZONE` so BST/GMT is handled). Each event
+carries two `VALARM` reminders: 12 hours before (7pm the evening before) and
+10 minutes before. `SEQUENCE:1` tells clients that the event replaced an
+earlier all-day version with the same UID.
+
+Reminders are a *suggestion* embedded in the feed. Apple Calendar and Outlook
+honour them; **Google Calendar ignores alarms in subscribed calendars** and
+uses the calendar's own notification settings instead (Settings → the
+calendar → Event notifications, where you can add "1 day before" and "10
+minutes before").
 
 ### Failure behaviour
 
