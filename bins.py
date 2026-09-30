@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 UPRN = "132020155"
 URL = ("https://www.eastdunbarton.gov.uk/services/a-z-of-services/"
        "bins-waste-and-recycling/bins-and-recycling/collections/")
+SUFFIX = " | Bin Collection"
 PICKUP_TIME = time(7, 0)  # local (Europe/London) collection time
 OUT = Path(__file__).parent / "bins.ics"
 EVENT_RE = re.compile(r"BEGIN:VEVENT\r?\n(.*?)END:VEVENT", re.S)
@@ -42,7 +43,7 @@ def load_existing():
         return set()
     items = set()
     for block in EVENT_RE.findall(OUT.read_bytes().decode()):
-        summary = re.search(r"SUMMARY:(.*)", block).group(1).strip()
+        summary = re.search(r"SUMMARY:(.*)", block).group(1).strip().removesuffix(SUFFIX)
         start = re.search(r"DTSTART[^:]*:(\d{8})", block).group(1)
         items.add((summary, datetime.strptime(start, "%Y%m%d").date()))
     return items
@@ -88,7 +89,7 @@ def render(items):
             "SEQUENCE:1",
             f"DTSTART;TZID=Europe/London:{start:%Y%m%dT%H%M%S}",
             f"DTEND;TZID=Europe/London:{end:%Y%m%dT%H%M%S}",
-            f"SUMMARY:{name}",
+            f"SUMMARY:{name}{SUFFIX}",
             *alarm("-PT12H", f"{name} collection tomorrow at 07:00"),
             *alarm("-PT10M", f"{name} collection in 10 minutes"),
             "END:VEVENT",
